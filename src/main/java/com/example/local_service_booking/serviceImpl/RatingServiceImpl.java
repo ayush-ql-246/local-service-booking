@@ -23,6 +23,11 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     public RatingDto addRating(Long bookingId, RatingRequestDto request, Long userId) throws Exception {
+
+        if(request.getRating()<1 || request.getRating()>5) {
+            throw new InvalidServiceRequestException("Rating should be in the range of 1-5");
+        }
+
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new InvalidServiceRequestException("Booking not found"));
 

@@ -2,7 +2,6 @@ package com.example.local_service_booking.services;
 
 import com.example.local_service_booking.dtos.ProviderServiceDto;
 import com.example.local_service_booking.dtos.ServiceRequestDto;
-import com.example.local_service_booking.entities.ProviderProfile;
 import com.example.local_service_booking.entities.ProviderService;
 import com.example.local_service_booking.entities.ServiceCategory;
 import org.springframework.data.domain.Page;
