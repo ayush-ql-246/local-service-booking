@@ -2,10 +2,7 @@ package com.example.local_service_booking.serviceImpl;
 
 import com.example.local_service_booking.dtos.RatingDto;
 import com.example.local_service_booking.dtos.RatingRequestDto;
-import com.example.local_service_booking.entities.AppUser;
-import com.example.local_service_booking.entities.Booking;
-import com.example.local_service_booking.entities.BookingStatus;
-import com.example.local_service_booking.entities.Rating;
+import com.example.local_service_booking.entities.*;
 import com.example.local_service_booking.exceptions.InvalidServiceRequestException;
 import com.example.local_service_booking.repositories.BookingRepository;
 import com.example.local_service_booking.repositories.RatingRepository;
@@ -53,6 +50,11 @@ public class RatingServiceImpl implements RatingService {
         rating.setCreatedAt(System.currentTimeMillis());
         rating.setUpdatedAt(System.currentTimeMillis());
         ratingRepository.save(rating);
+
+        // Update average rating of provider
+        ProviderProfile providerProfile = provider.getProviderProfile();
+        Double avgRating = ratingRepository.getAverageRatingByProvider(provider.getId());
+        providerProfile.setRatingAverage(avgRating);
 
         return DtoUtils.getRatingDto(rating);
     }
