@@ -9,7 +9,9 @@ public interface UserService {
 
     public UserResponseDto getUserResponseByEmail(String email);
 
-    AppUser getUserByEmail(String email);
+    AppUser getUserByEmail(String email) throws Exception;
+
+    AppUser getUserByPhoneNumber(String phoneNo) throws Exception;
 
     ProviderProfile getProviderProfileByProviderId(Long providerId);
 

@@ -5,7 +5,6 @@ import com.example.local_service_booking.entities.AppUser;
 import com.example.local_service_booking.exceptions.UnauthorizedAccessException;
 import com.example.local_service_booking.exceptions.UserAlreadyExistsException;
 import com.example.local_service_booking.services.AuthService;
-import com.example.local_service_booking.services.EmailService;
 import com.example.local_service_booking.services.UserService;
 import com.example.local_service_booking.utils.OtpUtil;
 import org.springframework.http.HttpStatus;
@@ -23,12 +22,10 @@ import java.util.Map;
 public class AuthController {
     private final AuthService authService;
     private final UserService userService;
-    private final EmailService emailService;
 
-    public AuthController(AuthService authService, UserService userService, EmailService emailService) {
+    public AuthController(AuthService authService, UserService userService) {
         this.authService = authService;
         this.userService = userService;
-        this.emailService = emailService;
     }
 
     @PostMapping(value = "/register")
@@ -44,21 +41,12 @@ public class AuthController {
     @PostMapping("/request-otp")
     public ResponseEntity<ApiResponse<Map<String, Object>>> requestOtp(@RequestBody OtpRequestDto request) throws Exception {
 
-        AppUser user = userService.getUserByEmail(request.getEmail());
-        if(user.getStatus().equals(UserStatus.BLOCKED)) {
-            throw new UnauthorizedAccessException("This account is blocked.");
+        String hash = authService.sendLoginOtp(request);
+        if(hash==null) {
+            throw new UnauthorizedAccessException("Hash token not generated");
         }
-
-        String otp = String.valueOf((int)(Math.random() * 900000) + 100000); // 6-digit OTP
-        long expiry = System.currentTimeMillis() + 5 * 60 * 1000; // 5 min expiry
-
-        String token = OtpUtil.generateOtpToken(request.getEmail(), otp, expiry);
-
-        String emailBody = "Hello " + user.getName() + ",\n\nYour OTP for login is: " + otp + "\nThis code is valid for 5 minutes.";
-        emailService.sendEmail(request.getEmail(), "Your OTP Code", emailBody);
-
         Map<String, Object> data = new HashMap<>();
-        data.put("token", token);
+        data.put("token", hash);
 
         return ResponseEntity.ok(ApiResponse.success(200, "OTP sent successfully", data));
     }

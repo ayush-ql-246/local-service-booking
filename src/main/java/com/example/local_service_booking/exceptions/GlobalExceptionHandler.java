@@ -34,8 +34,22 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.failure(401, "Unauthorized access", Map.of("details", ex.getMessage())));
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleUserNotFoundException(UserNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.failure(401, "Unauthorized access", Map.of("details", ex.getMessage())));
+    }
+
     @ExceptionHandler(InvalidServiceRequestException.class)
     public ResponseEntity<ApiResponse<Object>> handleInvalidServiceRequestException(InvalidServiceRequestException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.failure(400, "Wrong data provided", Map.of("details", ex.getMessage())));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.failure(400, "Wrong data provided", Map.of("details", ex.getMessage())));

@@ -1,17 +1,15 @@
 package com.example.local_service_booking.serviceImpl;
 
-import com.example.local_service_booking.dtos.TokenDto;
-import com.example.local_service_booking.dtos.UserRegistrationDto;
-import com.example.local_service_booking.dtos.UserResponseDto;
-import com.example.local_service_booking.dtos.UserStatus;
+import com.example.local_service_booking.dtos.*;
 import com.example.local_service_booking.entities.AppUser;
 import com.example.local_service_booking.entities.ProviderProfile;
 import com.example.local_service_booking.entities.UserRoles;
+import com.example.local_service_booking.exceptions.UnauthorizedAccessException;
 import com.example.local_service_booking.exceptions.UserAlreadyExistsException;
 import com.example.local_service_booking.repositories.AppUserRepository;
 import com.example.local_service_booking.repositories.ProviderProfileRepository;
-import com.example.local_service_booking.services.AuthService;
-import com.example.local_service_booking.services.JwtService;
+import com.example.local_service_booking.services.*;
+import com.example.local_service_booking.utils.OtpUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +18,20 @@ public class AuthServiceImpl implements AuthService {
     private final AppUserRepository userRepository;
     private final ProviderProfileRepository providerProfileRepository;
     private final JwtService jwtService;
+    private final UserService userService;
+    private final EmailService emailService;
+    private final SmsService smsService;
 
     public AuthServiceImpl(AppUserRepository userRepository,
                            ProviderProfileRepository providerProfileRepository,
-                           JwtService jwtService) {
+                           JwtService jwtService, UserService userService,
+                           SmsService smsService, EmailService emailService) {
         this.userRepository = userRepository;
         this.providerProfileRepository = providerProfileRepository;
         this.jwtService = jwtService;
+        this.userService = userService;
+        this.emailService = emailService;
+        this.smsService = smsService;
     }
 
     @Override
@@ -74,4 +79,40 @@ public class AuthServiceImpl implements AuthService {
         return UserResponseDto.from(user, providerProfile, token);
     }
 
+    @Override
+    public String sendLoginOtp(OtpRequestDto request) throws Exception {
+        if(request.getEmail()==null && request.getPhoneNumber()==null) {
+            throw new UnauthorizedAccessException("Email or phone number required");
+        }
+
+        boolean loginViaEmail = (request.getEmail() !=null && !request.getEmail().isEmpty());
+
+        AppUser user = null;
+        if(loginViaEmail) {
+            user = userService.getUserByEmail(request.getEmail());
+        } else {
+            user = userService.getUserByPhoneNumber(request.getPhoneNumber());
+        }
+        if(user==null) {
+            throw new UnauthorizedAccessException("User not exist");
+        }
+        if(user.getStatus().equals(UserStatus.BLOCKED)) {
+            throw new UnauthorizedAccessException("This account is blocked.");
+        }
+
+        String otp = String.valueOf((int)(Math.random() * 900000) + 100000); // 6-digit OTP
+        long expiry = System.currentTimeMillis() + 5 * 60 * 1000; // 5 min expiry
+
+        String token = OtpUtil.generateOtpToken(request.getEmail(), otp, expiry);
+
+        if(loginViaEmail) {
+            String emailBody = "Hello " + user.getName() + ",\n\nYour OTP for login is: " + otp + "\nThis code is valid for 5 minutes.";
+            emailService.sendEmail(request.getEmail(), "Your OTP Code", emailBody);
+        } else {
+            String smsBody = "Hello " + user.getName() + ",\n\nYour OTP for login is: " + otp + "\nThis code is valid for 5 minutes.";
+            smsService.sendSms(request.getPhoneNumber(), "Your OTP Code", smsBody);
+        }
+
+        return token;
+    }
 }

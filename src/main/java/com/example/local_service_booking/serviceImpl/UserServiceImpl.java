@@ -6,6 +6,7 @@ import com.example.local_service_booking.dtos.UserResponseDto;
 import com.example.local_service_booking.entities.AppUser;
 import com.example.local_service_booking.entities.ProviderProfile;
 import com.example.local_service_booking.exceptions.InvalidServiceRequestException;
+import com.example.local_service_booking.exceptions.UserNotFoundException;
 import com.example.local_service_booking.exceptions.UserValidationException;
 import com.example.local_service_booking.repositories.AppUserRepository;
 import com.example.local_service_booking.repositories.ProviderProfileRepository;
@@ -39,9 +40,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AppUser getUserByEmail(String email) {
+    public AppUser getUserByEmail(String email) throws Exception {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
+    @Override
+    public AppUser getUserByPhoneNumber(String phoneNo) throws Exception {
+        return userRepository.findByPhoneNumber(phoneNo)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     @Override
