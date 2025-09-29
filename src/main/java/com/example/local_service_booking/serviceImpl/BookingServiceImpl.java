@@ -160,10 +160,19 @@ public class BookingServiceImpl implements BookingService {
             throw new UnauthorizedAccessException("Unauthorized: You can only update your own bookings");
         }
 
+        if(booking.getStatus().equals(BookingStatus.COMPLETED)) {
+            throw new InvalidServiceRequestException("This booking is already completed");
+        }
+
         // Update status
         booking.setStatus(status);
         booking.setUpdatedAt(System.currentTimeMillis());
         bookingRepository.save(booking);
+
+        if(booking.getStatus().equals(BookingStatus.COMPLETED)) {
+            // Calculate hourly rates and add payment system logic
+            
+        }
 
         // Send notification to user
         String message = "Your booking with ID " + bookingId + " has been " + status.name();
