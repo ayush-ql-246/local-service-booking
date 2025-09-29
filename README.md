@@ -54,6 +54,7 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 jwt.secret=<your_jwt_secret_key>
 jwt.expiration=<jwt_expiration_time_in_milliseconds>
+otp.secret-key=<your_secret_key_for_otp_hash_generation>
 
 ### 4. Build and Run the Application
 mvn clean install
