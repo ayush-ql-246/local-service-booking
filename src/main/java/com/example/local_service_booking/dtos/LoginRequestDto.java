@@ -2,6 +2,7 @@ package com.example.local_service_booking.dtos;
 
 public class LoginRequestDto {
     private String email;
+    private String phoneNumber;
     private String otp;
     private String token; // The Base64(hash|expiry) token from backend
 
@@ -27,5 +28,13 @@ public class LoginRequestDto {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

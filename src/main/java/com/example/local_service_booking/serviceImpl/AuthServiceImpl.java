@@ -103,7 +103,7 @@ public class AuthServiceImpl implements AuthService {
         String otp = String.valueOf((int)(Math.random() * 900000) + 100000); // 6-digit OTP
         long expiry = System.currentTimeMillis() + 5 * 60 * 1000; // 5 min expiry
 
-        String token = OtpUtil.generateOtpToken(request.getEmail(), otp, expiry);
+        String token = OtpUtil.generateOtpToken(loginViaEmail ? request.getEmail() : request.getPhoneNumber(), otp, expiry);
 
         if(loginViaEmail) {
             String emailBody = "Hello " + user.getName() + ",\n\nYour OTP for login is: " + otp + "\nThis code is valid for 5 minutes.";

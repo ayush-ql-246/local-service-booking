@@ -1,5 +1,6 @@
 package com.example.local_service_booking.controllers;
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.*;
 import com.example.local_service_booking.exceptions.InvalidServiceRequestException;
 import com.example.local_service_booking.exceptions.UnauthorizedAccessException;
@@ -38,7 +39,7 @@ public class BookingController {
         }
 
         BookingDto booking = bookingService.createBooking(request);
-        return ResponseEntity.ok(ApiResponse.success(200, "Booking created successfully", booking));
+        return ResponseEntity.ok(ApiResponse.success(1005, Constants.getMessage(1005), booking));
     }
 
     @GetMapping("/user")
@@ -50,7 +51,7 @@ public class BookingController {
             throw new UnauthorizedAccessException("Unauthorized access");
         }
         Map<String, Object> response = bookingService.getBookingsByUser(user.getId(), page, size);
-        return ResponseEntity.ok(ApiResponse.success(200, "Provider bookings fetched successfully", response));
+        return ResponseEntity.ok(ApiResponse.success(1006, Constants.getMessage(1006), response));
     }
 
     @GetMapping("/provider")
@@ -63,7 +64,7 @@ public class BookingController {
         }
 
         Map<String, Object> response = bookingService.getBookingsByProvider(user.getId(), page, size);
-        return ResponseEntity.ok(ApiResponse.success(200, "Provider bookings fetched successfully", response));
+        return ResponseEntity.ok(ApiResponse.success(1007, Constants.getMessage(1007), response));
     }
 
     @GetMapping("/{bookingId}")
@@ -74,13 +75,13 @@ public class BookingController {
             throw new UnauthorizedAccessException("Unauthorized access");
         }
         BookingDto bookingDetails = bookingService.getBookingById(bookingId, user);
-        return ResponseEntity.ok(ApiResponse.success(200, "Booking details fetched successfully", bookingDetails));
+        return ResponseEntity.ok(ApiResponse.success(1008, Constants.getMessage(1008), bookingDetails));
     }
 
 
     @PutMapping("/{bookingId}/status")
     @PreAuthorize("hasRole('PROVIDER')")
-    public ResponseEntity<ApiResponse<BookingDto>> updateBookingStatus(HttpServletRequest httpServletRequest, @PathVariable Long bookingId,
+    public ResponseEntity<ApiResponse<BookingDto>> updateBookingStatus(@PathVariable Long bookingId,
         @RequestBody BookingStatusUpdateDto request) throws Exception {
         AppUserDto user = UserUtils.getCurrentUser();
         if(user==null) {
@@ -88,7 +89,7 @@ public class BookingController {
         }
 
         BookingDto updatedBooking = bookingService.updateBookingStatus(user.getId(), bookingId, request.getStatus());
-        return ResponseEntity.ok(ApiResponse.success(200, "Booking status updated successfully", updatedBooking));
+        return ResponseEntity.ok(ApiResponse.success(1009, Constants.getMessage(1009), updatedBooking));
     }
 
     @PutMapping("/{bookingId}/cancel")
@@ -100,7 +101,7 @@ public class BookingController {
             throw new UnauthorizedAccessException("Unauthorized access");
         }
         BookingDto cancelledBooking = bookingService.cancelBooking(bookingId, user.getId());
-        return ResponseEntity.ok(ApiResponse.success(200, "Booking cancelled successfully", cancelledBooking));
+        return ResponseEntity.ok(ApiResponse.success(1010, Constants.getMessage(1010), cancelledBooking));
     }
 
     @PostMapping("/{bookingId}/rating")
@@ -114,7 +115,7 @@ public class BookingController {
         }
 
         RatingDto rating = ratingService.addRating(bookingId, request, user.getId());
-        return ResponseEntity.ok(ApiResponse.success(200, "Rating added successfully", rating));
+        return ResponseEntity.ok(ApiResponse.success(1011, Constants.getMessage(1011), rating));
     }
 
 }

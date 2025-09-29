@@ -1,5 +1,6 @@
 package com.example.local_service_booking.controllers;
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.*;
 import com.example.local_service_booking.services.UserProviderService;
 import com.example.local_service_booking.utils.UserUtils;
@@ -30,7 +31,7 @@ public class ProviderController {
 
         AppUserDto user = UserUtils.getCurrentUser();
         userProviderService.setAvailability(user.getProviderProfile().getId(), availabilityDtos.getAvailabilityDtos());
-        return ResponseEntity.ok(ApiResponse.success(200, "Availability updated successfully", "OK"));
+        return ResponseEntity.ok(ApiResponse.success(1015, Constants.getMessage(1015), "OK"));
     }
 
     @GetMapping("/availability")
@@ -40,7 +41,7 @@ public class ProviderController {
 
         AppUserDto user = UserUtils.getCurrentUser();
         List<ProviderAvailabilityDto> availabilities = userProviderService.getAvailability(user.getProviderProfile().getId());
-        return ResponseEntity.ok(ApiResponse.success(200, "Availability fetched successfully", availabilities));
+        return ResponseEntity.ok(ApiResponse.success(1016, Constants.getMessage(1016), availabilities));
     }
 
     @PutMapping("/update")
@@ -50,7 +51,7 @@ public class ProviderController {
 
         AppUserDto user = UserUtils.getCurrentUser();
         userProviderService.updateProviderProfile(user.getProviderProfile().getId(), request);
-        return ResponseEntity.ok(ApiResponse.success(200, "Provider profile updated successfully", request));
+        return ResponseEntity.ok(ApiResponse.success(1017, Constants.getMessage(1017), request));
     }
 
 }

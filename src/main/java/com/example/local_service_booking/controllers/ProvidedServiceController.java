@@ -1,5 +1,6 @@
 package com.example.local_service_booking.controllers;
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.ApiResponse;
 import com.example.local_service_booking.dtos.AppUserDto;
 import com.example.local_service_booking.dtos.ProviderServiceDto;
@@ -31,7 +32,7 @@ public class ProvidedServiceController {
             throw new UnauthorizedAccessException("Unauthorized access");
         }
         ServiceRequestDto service = providedService.createOrUpdateService(user.getProviderProfile().getId(), serviceRequestDto);
-        return ResponseEntity.ok(ApiResponse.success(200, "Service added/updated successfully", service));
+        return ResponseEntity.ok(ApiResponse.success(1012, Constants.getMessage(1012), service));
     }
 
     @GetMapping
@@ -43,7 +44,7 @@ public class ProvidedServiceController {
         }
 
         List<ProviderServiceDto> services = providedService.getAllServicesForProvider(user.getProviderProfile().getId());
-        return ResponseEntity.ok(ApiResponse.success(200, "Services fetched successfully", services));
+        return ResponseEntity.ok(ApiResponse.success(1013, Constants.getMessage(1013), services));
     }
 
     @DeleteMapping("/{id}")
@@ -54,7 +55,7 @@ public class ProvidedServiceController {
             throw new UnauthorizedAccessException("Unauthorized access");
         }
         providedService.deleteService(user.getProviderProfile().getId(), id);
-        return ResponseEntity.ok(ApiResponse.success(200, "Service deleted successfully", "Deleted"));
+        return ResponseEntity.ok(ApiResponse.success(1014, Constants.getMessage(1014), "Deleted"));
     }
 }
 

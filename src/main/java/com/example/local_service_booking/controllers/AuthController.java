@@ -1,5 +1,6 @@
 package com.example.local_service_booking.controllers;
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.*;
 import com.example.local_service_booking.entities.AppUser;
 import com.example.local_service_booking.exceptions.UnauthorizedAccessException;
@@ -32,8 +33,8 @@ public class AuthController {
     public ResponseEntity<ApiResponse<UserResponseDto>> registerUser(@RequestBody UserRegistrationDto request) throws UserAlreadyExistsException {
         UserResponseDto user = authService.registerUser(request);
         return ResponseEntity.ok(ApiResponse.success(
-                200,
-                "The user was successfully created",
+                1001,
+                Constants.getMessage(1001),
                 user
         ));
     }
@@ -48,23 +49,34 @@ public class AuthController {
         Map<String, Object> data = new HashMap<>();
         data.put("token", hash);
 
-        return ResponseEntity.ok(ApiResponse.success(200, "OTP sent successfully", data));
+        return ResponseEntity.ok(ApiResponse.success(1002, Constants.getMessage(1002), data));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginRequestDto request) throws Exception {
-        AppUser user = userService.getUserByEmail(request.getEmail());
+        if(request.getEmail()==null && request.getPhoneNumber()==null) {
+            throw new UnauthorizedAccessException("Email or phone number required");
+        }
+        boolean loginViaEmail = (request.getEmail() !=null && !request.getEmail().isEmpty());
+        AppUser user = null;
+        if(loginViaEmail) {
+            user = userService.getUserByEmail(request.getEmail());
+        } else {
+            user = userService.getUserByPhoneNumber(request.getPhoneNumber());
+        }
+        if(user==null) {
+            throw new UnauthorizedAccessException("User not exist");
+        }
         if(user.getStatus().equals(UserStatus.BLOCKED)) {
             throw new UnauthorizedAccessException("This account is blocked.");
         }
-
-        boolean valid = OtpUtil.verifyOtp(request.getEmail(), request.getOtp(), request.getToken());
+        boolean valid = OtpUtil.verifyOtp(loginViaEmail ? request.getEmail() : request.getPhoneNumber(), request.getOtp(), request.getToken());
         if (!valid) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.failure(401, "Invalid or expired OTP", Map.of("details", "OTP verification failed")));
+                    .body(ApiResponse.failure(1003, Constants.getMessage(1003), Map.of("details", "OTP verification failed")));
         }
 
-        return ResponseEntity.ok(ApiResponse.success(200, "Login successful", userService.getUserResponseByEmail(request.getEmail())));
+        return ResponseEntity.ok(ApiResponse.success(1004, Constants.getMessage(1004), userService.getUserResponseByEmail(user.getEmail())));
     }
 
 

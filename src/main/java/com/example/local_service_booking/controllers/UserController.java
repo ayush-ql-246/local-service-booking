@@ -1,6 +1,7 @@
 package com.example.local_service_booking.controllers;
 
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.ApiResponse;
 import com.example.local_service_booking.dtos.AppUserDto;
 import com.example.local_service_booking.dtos.UserProfileUpdateDto;
@@ -27,7 +28,7 @@ public class UserController {
             throw new UnauthorizedAccessException("Unauthorized access");
         }
 
-        return ResponseEntity.ok(ApiResponse.success(200, "User fetched successfully", user));
+        return ResponseEntity.ok(ApiResponse.success(1019, Constants.getMessage(1019), user));
     }
 
 
@@ -39,6 +40,6 @@ public class UserController {
         }
 
         userService.updateUserProfile(user.getId(), userProfileUpdateDto);
-        return ResponseEntity.ok(ApiResponse.success(200, "User profile updated successfully", userProfileUpdateDto));
+        return ResponseEntity.ok(ApiResponse.success(1020, Constants.getMessage(1020), userProfileUpdateDto));
     }
 }

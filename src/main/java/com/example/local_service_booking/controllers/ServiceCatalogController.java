@@ -1,5 +1,6 @@
 package com.example.local_service_booking.controllers;
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.ApiResponse;
 import com.example.local_service_booking.dtos.AppUserDto;
 import com.example.local_service_booking.dtos.ProviderServiceDto;
@@ -62,7 +63,7 @@ public class ServiceCatalogController {
         response.put("totalItems", services.getTotalElements());
         response.put("totalPages", services.getTotalPages());
 
-        return ResponseEntity.ok(ApiResponse.success(200, "Services fetched successfully", response));
+        return ResponseEntity.ok(ApiResponse.success(1013, Constants.getMessage(1013), response));
     }
 
     @GetMapping("/available-services")
@@ -89,7 +90,7 @@ public class ServiceCatalogController {
         response.put("totalItems", services.getTotalElements());
         response.put("totalPages", services.getTotalPages());
 
-        return ResponseEntity.ok(ApiResponse.success(200, "Available services fetched successfully", response));
+        return ResponseEntity.ok(ApiResponse.success(1018, Constants.getMessage(1018), response));
     }
 
 
