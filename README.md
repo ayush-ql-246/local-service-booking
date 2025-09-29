@@ -94,6 +94,3 @@ The application will start at: http://localhost:8080
 21) GET - /api/v1/admin/users?page={pageNo}&size={pageSize} :- Get all users
 22) PUT - /api/v1/admin/users/1/status?status={status - ACTIVE/BLOCKED} :- Change User account status
 23) GET - /api/v1/admin/bookings?page={pageNo}&size={pageSize} :- Get all bookings
-
-### ER-Diagram
-Link: https://quokkalabsllp-my.sharepoint.com/:i:/g/personal/ayush_joshi_quokkalabs_com/EQFFfLRsNdpPs2mqLa8RB0EBw6ZzAgxhYE4EIRcsJctyBQ?e=ptwK4K
