@@ -75,7 +75,7 @@ public class AuthController {
         boolean valid = otpUtil.verifyOtp(loginViaEmail ? request.getEmail() : request.getPhoneNumber(), request.getOtp(), request.getToken());
         if (!valid) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.failure(1003, Constants.getMessage(1003), Map.of("details", "OTP verification failed")));
+                    .body(ApiResponse.failure(1003, Constants.getMessage(1003), Map.of("details", Constants.getMessage(2005))));
         }
 
         return ResponseEntity.ok(ApiResponse.success(1004, Constants.getMessage(1004), userService.getUserResponseByEmail(user.getEmail())));

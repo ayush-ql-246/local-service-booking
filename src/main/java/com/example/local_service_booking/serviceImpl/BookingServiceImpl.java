@@ -1,5 +1,6 @@
 package com.example.local_service_booking.serviceImpl;
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.AppUserDto;
 import com.example.local_service_booking.dtos.BookingDto;
 import com.example.local_service_booking.dtos.BookingRequestDto;
@@ -42,29 +43,29 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto createBooking(BookingRequestDto request) throws Exception {
         if (request.getStartTime() == null || request.getEndTime() == null) {
-            throw new InvalidServiceRequestException("startTime and endTime are required");
+            throw new InvalidServiceRequestException(Constants.getMessage(2015));
         }
         if (request.getStartTime() < 0 || request.getStartTime() > 23 ||
                 request.getEndTime() < 0 || request.getEndTime() > 23 ||
                 request.getStartTime() >= request.getEndTime()) {
-            throw new InvalidServiceRequestException("Invalid startTime/endTime. Use 0..23 and startTime < endTime");
+            throw new InvalidServiceRequestException(Constants.getMessage(2016));
         }
 
         AppUser user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(Constants.getMessage(2007)));
 
         ProviderService providerService = providerServiceRepository.findById(request.getProviderServiceId())
-                .orElseThrow(() -> new ServiceNotFoundException("Service not found"));
+                .orElseThrow(() -> new ServiceNotFoundException(Constants.getMessage(2017)));
 
 
         // Validate providerId matches the providerService's provider
         Long requestedProviderId = request.getProviderId();
         if (requestedProviderId == null) {
-            throw new InvalidServiceRequestException("providerId is required");
+            throw new InvalidServiceRequestException(Constants.getMessage(2018));
         }
         Long actualProviderProfileId = providerService.getProvider().getId();
         if (!requestedProviderId.equals(actualProviderProfileId)) {
-            throw new InvalidServiceRequestException("providerId does not match the selected provider service");
+            throw new InvalidServiceRequestException(Constants.getMessage(2019));
         }
 
         List<Booking> overlappingProviderBookings = bookingRepository.findOverlappingBookingsForProvider(
@@ -74,7 +75,7 @@ public class BookingServiceImpl implements BookingService {
         );
 
         if (!overlappingProviderBookings.isEmpty()) {
-            throw new InvalidServiceRequestException("Provider is already booked during this time slot.");
+            throw new InvalidServiceRequestException(Constants.getMessage(2020));
         }
 
         Booking booking = new Booking();
@@ -135,11 +136,11 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto getBookingById(Long bookingId, AppUserDto userDto) throws Exception {
 
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new BookingException(Constants.getMessage(2021)));
 
         // Ensure only the user or provider involved can see it
         if (!booking.getUser().getId().equals(userDto.getId()) && !booking.getProvider().getId().equals(userDto.getId())) {
-            throw new BookingException("You can only view your own bookings");
+            throw new BookingException(Constants.getMessage(2022));
         }
 
         return DtoUtils.mapToBookingDto(booking);
@@ -150,15 +151,15 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto updateBookingStatus(Long providerId, Long bookingId, BookingStatus status) throws Exception {
 
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new BookingException(Constants.getMessage(2021)));
 
         // Validate provider owns the booking
         if (!booking.getProvider().getId().equals(providerId)) {
-            throw new UnauthorizedAccessException("Unauthorized: You can only update your own bookings");
+            throw new UnauthorizedAccessException(Constants.getMessage(2023));
         }
 
         if(booking.getStatus().equals(BookingStatus.COMPLETED)) {
-            throw new InvalidServiceRequestException("This booking is already completed");
+            throw new InvalidServiceRequestException(Constants.getMessage(2024));
         }
 
         // Update status
@@ -195,16 +196,16 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto cancelBooking(Long bookingId, Long userId) throws Exception {
 
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new BookingException("Booking not found"));
+                .orElseThrow(() -> new BookingException(Constants.getMessage(2021)));
 
         // Validate that this booking belongs to the user
         if (!booking.getUser().getId().equals(userId)) {
-            throw new BookingException("You can only cancel your own bookings");
+            throw new BookingException(Constants.getMessage(2025));
         }
 
         // Check if booking start time is in future
         if (System.currentTimeMillis() > booking.getStartTime()) {
-            throw new BookingException("Cannot cancel booking after it has started");
+            throw new BookingException(Constants.getMessage(2026));
         }
 
         // Update status

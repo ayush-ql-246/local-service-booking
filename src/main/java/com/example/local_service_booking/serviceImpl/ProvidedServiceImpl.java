@@ -1,5 +1,6 @@
 package com.example.local_service_booking.serviceImpl;
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.ProviderServiceDto;
 import com.example.local_service_booking.dtos.ServiceRequestDto;
 import com.example.local_service_booking.entities.ProviderAvailability;
@@ -12,7 +13,6 @@ import com.example.local_service_booking.repositories.ProviderServiceRepository;
 import com.example.local_service_booking.services.ProvidedService;
 import com.example.local_service_booking.services.UserService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,7 @@ public class ProvidedServiceImpl implements ProvidedService {
     }
 
     @Override
-    public ServiceRequestDto createOrUpdateService(Long providerId, ServiceRequestDto serviceRequestDto) {
+    public ServiceRequestDto createOrUpdateService(Long providerId, ServiceRequestDto serviceRequestDto) throws Exception {
         ProviderProfile provider = userService.getProviderProfileByProviderId(providerId);
 
         // Check if service with same category exists for this provider
@@ -63,7 +63,7 @@ public class ProvidedServiceImpl implements ProvidedService {
     }
 
     @Override
-    public List<ProviderServiceDto> getAllServicesForProvider(Long providerId) {
+    public List<ProviderServiceDto> getAllServicesForProvider(Long providerId) throws Exception {
         ProviderProfile provider = userService.getProviderProfileByProviderId(providerId);
         List<ProviderService> providerServices = serviceRepository.findByProvider(provider);
 
@@ -85,14 +85,14 @@ public class ProvidedServiceImpl implements ProvidedService {
     }
 
     @Override
-    public void deleteService(Long providerId, Long serviceId) {
+    public void deleteService(Long providerId, Long serviceId) throws Exception {
         ProviderProfile provider = userService.getProviderProfileByProviderId(providerId);
         ProviderService service = serviceRepository.findById(serviceId)
-                .orElseThrow(() -> new RuntimeException("Service not found"));
+                .orElseThrow(() -> new RuntimeException(Constants.getMessage(2017)));
 
         // Ensure provider owns this service
         if (!service.getProvider().getId().equals(provider.getId())) {
-            throw new RuntimeException("You are not allowed to delete this service");
+            throw new RuntimeException(Constants.getMessage(2029));
         }
         serviceRepository.delete(service);
     }
@@ -110,10 +110,10 @@ public class ProvidedServiceImpl implements ProvidedService {
     @Override
     public Page<ProviderService> getAllAvailableServices(ServiceCategory category, Long startTime, Long endTime, Pageable pageable) throws Exception {
         if(startTime>23 || startTime<0 || endTime<0 || endTime>23) {
-            throw new InvalidServiceRequestException("startTime and endTime should be in the range 0-23");
+            throw new InvalidServiceRequestException(Constants.getMessage(2030));
         }
         if(startTime>=endTime) {
-            throw new InvalidServiceRequestException("endTime should be greater than startTime");
+            throw new InvalidServiceRequestException(Constants.getMessage(2031));
         }
         Page<ProviderService> services = serviceRepository.findAvailableServices(category, startTime, endTime, pageable);
         return services;

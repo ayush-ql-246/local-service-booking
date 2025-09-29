@@ -10,11 +10,11 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface ProvidedService {
-    ServiceRequestDto createOrUpdateService(Long providerId, ServiceRequestDto serviceRequestDto);
+    ServiceRequestDto createOrUpdateService(Long providerId, ServiceRequestDto serviceRequestDto) throws Exception;
 
-    List<ProviderServiceDto> getAllServicesForProvider(Long providerId);
+    List<ProviderServiceDto> getAllServicesForProvider(Long providerId) throws Exception;
 
-    void deleteService(Long providerId, Long serviceId);
+    void deleteService(Long providerId, Long serviceId) throws Exception;
 
     Page<ProviderService> getServicesByCategory(ServiceCategory category, Pageable pageable);
 

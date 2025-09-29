@@ -1,5 +1,6 @@
 package com.example.local_service_booking.serviceImpl;
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.TokenDto;
 import com.example.local_service_booking.dtos.UserProfileUpdateDto;
 import com.example.local_service_booking.dtos.UserResponseDto;
@@ -28,9 +29,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto getUserResponseByEmail(String email) {
+    public UserResponseDto getUserResponseByEmail(String email) throws Exception {
         AppUser user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(Constants.getMessage(2007)));
 
         TokenDto tokenDto = new TokenDto();
         tokenDto.setEmail(user.getEmail());
@@ -42,30 +43,30 @@ public class UserServiceImpl implements UserService {
     @Override
     public AppUser getUserByEmail(String email) throws Exception {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(Constants.getMessage(2007)));
     }
 
     @Override
     public AppUser getUserByPhoneNumber(String phoneNo) throws Exception {
         return userRepository.findByPhoneNumber(phoneNo)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(Constants.getMessage(2007)));
     }
 
     @Override
-    public ProviderProfile getProviderProfileByProviderId(Long providerId) {
+    public ProviderProfile getProviderProfileByProviderId(Long providerId) throws Exception {
         return providerProfileRepository.findById(providerId)
-                .orElseThrow(() -> new RuntimeException("Profile not found"));
+                .orElseThrow(() -> new UserNotFoundException(Constants.getMessage(2008)));
     }
 
     @Override
     public void updateUserProfile(Long userId, UserProfileUpdateDto request) throws Exception {
         AppUser user = userRepository.findById(userId)
-                .orElseThrow(() -> new InvalidServiceRequestException("User not found"));
+                .orElseThrow(() -> new InvalidServiceRequestException(Constants.getMessage(2007)));
 
         if (request.getName() != null) user.setName(request.getName());
         if (request.getPhoneNumber() != null) {
             if(request.getPhoneNumber().length()!=10) {
-                throw new UserValidationException("Phone number should be of 10 characters");
+                throw new UserValidationException(Constants.getMessage(2009));
             }
             user.setPhoneNumber(request.getPhoneNumber());
         }

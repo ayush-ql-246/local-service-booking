@@ -1,5 +1,6 @@
 package com.example.local_service_booking.serviceImpl;
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.AppUserDto;
 import com.example.local_service_booking.dtos.ProviderProfileDto;
 import com.example.local_service_booking.dtos.TokenDto;
@@ -62,12 +63,12 @@ public class JwtServiceImpl implements JwtService {
     public AppUserDto getUserFromToken(HttpServletRequest request) throws Exception {
         String jwtToken = getJwtFromRequest(request);
         if (jwtToken == null || jwtToken.isEmpty()) {
-            throw new InvalidUserException("User token invalid");
+            throw new InvalidUserException(Constants.getMessage(2027));
         }
 
         String email = extractEmail(jwtToken);
         if (email == null) {
-            throw new InvalidUserException("Invalid token");
+            throw new InvalidUserException(Constants.getMessage(2028));
         }
 
         AppUser user = userService.getUserByEmail(email);

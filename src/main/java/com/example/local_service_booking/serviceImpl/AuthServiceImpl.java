@@ -1,5 +1,6 @@
 package com.example.local_service_booking.serviceImpl;
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.*;
 import com.example.local_service_booking.entities.AppUser;
 import com.example.local_service_booking.entities.ProviderProfile;
@@ -41,15 +42,15 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public UserResponseDto registerUser(UserRegistrationDto request) throws UserAlreadyExistsException {
         if (request.getRole() == UserRoles.ADMIN) {
-            throw new IllegalArgumentException("Cannot create admin accounts via registration");
+            throw new IllegalArgumentException(Constants.getMessage(2011));
         }
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new UserAlreadyExistsException("Email already in use");
+            throw new UserAlreadyExistsException(Constants.getMessage(2012));
         }
 
         if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
-            throw new UserAlreadyExistsException("Phone number already in use");
+            throw new UserAlreadyExistsException(Constants.getMessage(2013));
         }
 
         // 1. Create user
@@ -85,7 +86,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String sendLoginOtp(OtpRequestDto request) throws Exception {
         if(request.getEmail()==null && request.getPhoneNumber()==null) {
-            throw new UnauthorizedAccessException("Email or phone number required");
+            throw new UnauthorizedAccessException(Constants.getMessage(2014));
         }
 
         boolean loginViaEmail = (request.getEmail() !=null && !request.getEmail().isEmpty());
@@ -97,10 +98,10 @@ public class AuthServiceImpl implements AuthService {
             user = userService.getUserByPhoneNumber(request.getPhoneNumber());
         }
         if(user==null) {
-            throw new UnauthorizedAccessException("User not exist");
+            throw new UnauthorizedAccessException(Constants.getMessage(2003));
         }
         if(user.getStatus().equals(UserStatus.BLOCKED)) {
-            throw new UnauthorizedAccessException("This account is blocked.");
+            throw new UnauthorizedAccessException(Constants.getMessage(2004));
         }
 
         String otp = String.valueOf((int)(Math.random() * 900000) + 100000); // 6-digit OTP

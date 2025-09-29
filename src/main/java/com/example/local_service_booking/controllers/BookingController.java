@@ -32,10 +32,10 @@ public class BookingController {
 
         AppUserDto user = UserUtils.getCurrentUser();
         if(user==null) {
-            throw new UnauthorizedAccessException("Unauthorized access");
+            throw new UnauthorizedAccessException(Constants.getMessage(401));
         }
         if(!user.getId().equals(request.getUserId())) {
-            throw new InvalidServiceRequestException("User can create booking only for their accounts");
+            throw new InvalidServiceRequestException(Constants.getMessage(2006));
         }
 
         BookingDto booking = bookingService.createBooking(request);
@@ -48,7 +48,7 @@ public class BookingController {
         AppUserDto user = UserUtils.getCurrentUser();
 
         if(user==null) {
-            throw new UnauthorizedAccessException("Unauthorized access");
+            throw new UnauthorizedAccessException(Constants.getMessage(401));
         }
         Map<String, Object> response = bookingService.getBookingsByUser(user.getId(), page, size);
         return ResponseEntity.ok(ApiResponse.success(1006, Constants.getMessage(1006), response));
@@ -60,7 +60,7 @@ public class BookingController {
         AppUserDto user = UserUtils.getCurrentUser();
 
         if(user==null) {
-            throw new UnauthorizedAccessException("Unauthorized access");
+            throw new UnauthorizedAccessException(Constants.getMessage(401));
         }
 
         Map<String, Object> response = bookingService.getBookingsByProvider(user.getId(), page, size);
@@ -72,7 +72,7 @@ public class BookingController {
         AppUserDto user = UserUtils.getCurrentUser();
 
         if(user==null) {
-            throw new UnauthorizedAccessException("Unauthorized access");
+            throw new UnauthorizedAccessException(Constants.getMessage(401));
         }
         BookingDto bookingDetails = bookingService.getBookingById(bookingId, user);
         return ResponseEntity.ok(ApiResponse.success(1008, Constants.getMessage(1008), bookingDetails));
@@ -85,7 +85,7 @@ public class BookingController {
         @RequestBody BookingStatusUpdateDto request) throws Exception {
         AppUserDto user = UserUtils.getCurrentUser();
         if(user==null) {
-            throw new UnauthorizedAccessException("Unauthorized access");
+            throw new UnauthorizedAccessException(Constants.getMessage(401));
         }
 
         BookingDto updatedBooking = bookingService.updateBookingStatus(user.getId(), bookingId, request.getStatus());
@@ -98,7 +98,7 @@ public class BookingController {
 
         AppUserDto user = UserUtils.getCurrentUser();
         if(user==null) {
-            throw new UnauthorizedAccessException("Unauthorized access");
+            throw new UnauthorizedAccessException(Constants.getMessage(401));
         }
         BookingDto cancelledBooking = bookingService.cancelBooking(bookingId, user.getId());
         return ResponseEntity.ok(ApiResponse.success(1010, Constants.getMessage(1010), cancelledBooking));
@@ -111,7 +111,7 @@ public class BookingController {
 
         AppUserDto user = UserUtils.getCurrentUser();
         if(user==null) {
-            throw new UnauthorizedAccessException("Unauthorized access");
+            throw new UnauthorizedAccessException(Constants.getMessage(401));
         }
 
         RatingDto rating = ratingService.addRating(bookingId, request, user.getId());

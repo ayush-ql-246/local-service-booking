@@ -44,7 +44,7 @@ public class ServiceCatalogController {
 
         AppUserDto user = UserUtils.getCurrentUser();
         if(user==null) {
-            throw new UnauthorizedAccessException("Unauthorized access");
+            throw new UnauthorizedAccessException(Constants.getMessage(401));
         }
 
         Pageable pageable = PageRequest.of(page, size);
@@ -77,7 +77,7 @@ public class ServiceCatalogController {
 
         AppUserDto user = UserUtils.getCurrentUser();
         if(user==null) {
-            throw new UnauthorizedAccessException("Unauthorized access");
+            throw new UnauthorizedAccessException(Constants.getMessage(401));
         }
 
         Pageable pageable = PageRequest.of(page, size);

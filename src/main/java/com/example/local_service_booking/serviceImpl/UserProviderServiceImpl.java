@@ -1,5 +1,6 @@
 package com.example.local_service_booking.serviceImpl;
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.ProviderAvailabilityDto;
 import com.example.local_service_booking.dtos.ProviderProfileUpdateDto;
 import com.example.local_service_booking.entities.ProviderAvailability;
@@ -28,7 +29,7 @@ public class UserProviderServiceImpl implements UserProviderService {
     @Override
     public void setAvailability(Long providerId, List<ProviderAvailabilityDto> availabilityDtos) {
         ProviderProfile provider = providerProfileRepository.findById(providerId)
-                .orElseThrow(() -> new RuntimeException("Provider not found"));
+                .orElseThrow(() -> new RuntimeException(Constants.getMessage(2036)));
 
         for (ProviderAvailabilityDto dto : availabilityDtos) {
             availabilityRepository.findByProviderIdAndDayOfWeek(providerId, dto.getDayOfWeek())
@@ -54,7 +55,7 @@ public class UserProviderServiceImpl implements UserProviderService {
     @Override
     public List<ProviderAvailabilityDto> getAvailability(Long providerId) {
         ProviderProfile provider = providerProfileRepository.findById(providerId)
-                .orElseThrow(() -> new RuntimeException("Provider not found"));
+                .orElseThrow(() -> new RuntimeException(Constants.getMessage(2036)));
         List<ProviderAvailabilityDto> providerAvailabilityDtoList = new ArrayList<>();
 
         for(ProviderAvailability availability : provider.getAvailabilityList()) {
@@ -73,7 +74,7 @@ public class UserProviderServiceImpl implements UserProviderService {
     @Override
     public void updateProviderProfile(Long providerId, ProviderProfileUpdateDto request) throws Exception {
         ProviderProfile profile = providerProfileRepository.findById(providerId)
-                .orElseThrow(() -> new InvalidServiceRequestException("Provider profile not found"));
+                .orElseThrow(() -> new InvalidServiceRequestException(Constants.getMessage(2037)));
 
         if (request.getCity() != null) profile.setCity(request.getCity());
         if (request.getStatus() != null) profile.setStatus(request.getStatus());

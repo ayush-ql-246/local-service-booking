@@ -1,5 +1,6 @@
 package com.example.local_service_booking.serviceImpl;
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.RatingDto;
 import com.example.local_service_booking.dtos.RatingRequestDto;
 import com.example.local_service_booking.entities.*;
@@ -25,25 +26,25 @@ public class RatingServiceImpl implements RatingService {
     public RatingDto addRating(Long bookingId, RatingRequestDto request, Long userId) throws Exception {
 
         if(request.getRating()<1 || request.getRating()>5) {
-            throw new InvalidServiceRequestException("Rating should be in the range of 1-5");
+            throw new InvalidServiceRequestException(Constants.getMessage(2032));
         }
 
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new InvalidServiceRequestException("Booking not found"));
+                .orElseThrow(() -> new InvalidServiceRequestException(Constants.getMessage(2021)));
 
         if (booking.getStatus() != BookingStatus.COMPLETED) {
-            throw new InvalidServiceRequestException("Rating can only be added after booking is completed");
+            throw new InvalidServiceRequestException(Constants.getMessage(2033));
         }
 
         if (ratingRepository.findByBookingId(bookingId).isPresent()) {
-            throw new InvalidServiceRequestException("Rating already submitted for this booking");
+            throw new InvalidServiceRequestException(Constants.getMessage(2034));
         }
 
         AppUser user = booking.getUser();
         AppUser provider = booking.getProvider();
 
         if (!user.getId().equals(userId)) {
-            throw new RuntimeException("You are not allowed to rate this booking");
+            throw new RuntimeException(Constants.getMessage(2035));
         }
 
         Rating rating = new Rating();

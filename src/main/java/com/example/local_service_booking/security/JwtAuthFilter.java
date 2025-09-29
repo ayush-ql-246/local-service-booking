@@ -1,5 +1,6 @@
 package com.example.local_service_booking.security;
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.UserStatus;
 import com.example.local_service_booking.entities.AppUser;
 import com.example.local_service_booking.services.JwtService;
@@ -7,13 +8,10 @@ import com.example.local_service_booking.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -47,7 +45,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     AppUser user = userService.getUserByEmail(email);
 
                     if (user.getStatus().equals(UserStatus.BLOCKED)) {
-                        handleUnauthorizedResponse(response, false, 401, "This account is blocked.", "Blocked User");
+                        handleUnauthorizedResponse(response, false, 2004, Constants.getMessage(2004), "Blocked User");
                         return;
                     }
 
@@ -60,13 +58,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (ExpiredJwtException e) {
-                handleUnauthorizedResponse(response, false, 401, "Token expired", "Please log in again");
+                handleUnauthorizedResponse(response, false, 1028, Constants.getMessage(1028), "Please log in again");
                 return;
             } catch (JwtException e) {
-                handleUnauthorizedResponse(response, false, 401, "Invalid token", "Token is invalid");
+                handleUnauthorizedResponse(response, false, 2028, Constants.getMessage(2028), "Token is invalid");
                 return;
             } catch (Exception e) {
-                handleUnauthorizedResponse(response, false, 401, "Invalid Request", "An error occurred");
+                handleUnauthorizedResponse(response, false, 2038, Constants.getMessage(2038), "An error occurred");
                 return;
             }
         }

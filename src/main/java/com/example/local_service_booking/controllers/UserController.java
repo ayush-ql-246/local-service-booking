@@ -25,7 +25,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<AppUserDto>> getUser() throws Exception {
         AppUserDto user = UserUtils.getCurrentUser();
         if(user==null) {
-            throw new UnauthorizedAccessException("Unauthorized access");
+            throw new UnauthorizedAccessException(Constants.getMessage(401));
         }
 
         return ResponseEntity.ok(ApiResponse.success(1019, Constants.getMessage(1019), user));
@@ -36,7 +36,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserProfileUpdateDto>> updateUserProfile(@RequestBody UserProfileUpdateDto userProfileUpdateDto) throws Exception {
         AppUserDto user = UserUtils.getCurrentUser();
         if(user==null) {
-            throw new UnauthorizedAccessException("Unauthorized access");
+            throw new UnauthorizedAccessException(Constants.getMessage(401));
         }
 
         userService.updateUserProfile(user.getId(), userProfileUpdateDto);

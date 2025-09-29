@@ -29,7 +29,7 @@ public class ProvidedServiceController {
     public ResponseEntity<ApiResponse<ServiceRequestDto>> addOrUpdateService(@RequestBody ServiceRequestDto serviceRequestDto) throws Exception {
         AppUserDto user = UserUtils.getCurrentUser();
         if(user==null) {
-            throw new UnauthorizedAccessException("Unauthorized access");
+            throw new UnauthorizedAccessException(Constants.getMessage(401));
         }
         ServiceRequestDto service = providedService.createOrUpdateService(user.getProviderProfile().getId(), serviceRequestDto);
         return ResponseEntity.ok(ApiResponse.success(1012, Constants.getMessage(1012), service));
@@ -40,7 +40,7 @@ public class ProvidedServiceController {
     public ResponseEntity<ApiResponse<List<ProviderServiceDto>>> getAllServices() throws Exception {
         AppUserDto user = UserUtils.getCurrentUser();
         if(user==null) {
-            throw new UnauthorizedAccessException("Unauthorized access");
+            throw new UnauthorizedAccessException(Constants.getMessage(401));
         }
 
         List<ProviderServiceDto> services = providedService.getAllServicesForProvider(user.getProviderProfile().getId());
@@ -52,7 +52,7 @@ public class ProvidedServiceController {
     public ResponseEntity<ApiResponse<String>> deleteService(@PathVariable Long id) throws Exception {
         AppUserDto user = UserUtils.getCurrentUser();
         if(user==null) {
-            throw new UnauthorizedAccessException("Unauthorized access");
+            throw new UnauthorizedAccessException(Constants.getMessage(401));
         }
         providedService.deleteService(user.getProviderProfile().getId(), id);
         return ResponseEntity.ok(ApiResponse.success(1014, Constants.getMessage(1014), "Deleted"));
