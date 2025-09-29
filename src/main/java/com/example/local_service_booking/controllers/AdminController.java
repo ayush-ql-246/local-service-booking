@@ -1,5 +1,6 @@
 package com.example.local_service_booking.controllers;
 
+import com.example.local_service_booking.constants.Constants;
 import com.example.local_service_booking.dtos.*;
 import com.example.local_service_booking.entities.BookingStatus;
 import com.example.local_service_booking.entities.UserRoles;
@@ -39,7 +40,7 @@ public class AdminController {
         response.put("currentPage", users.getNumber());
         response.put("totalItems", users.getTotalElements());
         response.put("totalPages", users.getTotalPages());
-        return ResponseEntity.ok(ApiResponse.success(200, "Users fetched successfully", response));
+        return ResponseEntity.ok(ApiResponse.success(1025, Constants.getMessage(1025), response));
     }
 
     @PutMapping("/users/{id}/status")
@@ -48,7 +49,7 @@ public class AdminController {
         @RequestParam("status") UserStatus status) throws Exception {
 
         adminService.updateUserStatus(id, status);
-        return ResponseEntity.ok(ApiResponse.success(200, "User status updated successfully", "Status changed to " + status));
+        return ResponseEntity.ok(ApiResponse.success(1026, Constants.getMessage(1026), "Status changed to " + status));
     }
 
     @GetMapping("/bookings")
@@ -65,7 +66,7 @@ public class AdminController {
         response.put("currentPage", bookings.getNumber());
         response.put("totalItems", bookings.getTotalElements());
         response.put("totalPages", bookings.getTotalPages());
-        return ResponseEntity.ok(ApiResponse.success(200, "Bookings fetched successfully", response));
+        return ResponseEntity.ok(ApiResponse.success(1027, Constants.getMessage(1027), response));
     }
 
 }

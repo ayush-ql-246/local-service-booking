@@ -23,10 +23,12 @@ import java.util.Map;
 public class AuthController {
     private final AuthService authService;
     private final UserService userService;
+    private final OtpUtil otpUtil;
 
-    public AuthController(AuthService authService, UserService userService) {
+    public AuthController(AuthService authService, UserService userService, OtpUtil otpUtil) {
         this.authService = authService;
         this.userService = userService;
+        this.otpUtil = otpUtil;
     }
 
     @PostMapping(value = "/register")
@@ -44,7 +46,7 @@ public class AuthController {
 
         String hash = authService.sendLoginOtp(request);
         if(hash==null) {
-            throw new UnauthorizedAccessException("Hash token not generated");
+            throw new UnauthorizedAccessException(Constants.getMessage(2001));
         }
         Map<String, Object> data = new HashMap<>();
         data.put("token", hash);
@@ -55,7 +57,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginRequestDto request) throws Exception {
         if(request.getEmail()==null && request.getPhoneNumber()==null) {
-            throw new UnauthorizedAccessException("Email or phone number required");
+            throw new UnauthorizedAccessException(Constants.getMessage(2002));
         }
         boolean loginViaEmail = (request.getEmail() !=null && !request.getEmail().isEmpty());
         AppUser user = null;
@@ -65,12 +67,12 @@ public class AuthController {
             user = userService.getUserByPhoneNumber(request.getPhoneNumber());
         }
         if(user==null) {
-            throw new UnauthorizedAccessException("User not exist");
+            throw new UnauthorizedAccessException(Constants.getMessage(2003));
         }
         if(user.getStatus().equals(UserStatus.BLOCKED)) {
-            throw new UnauthorizedAccessException("This account is blocked.");
+            throw new UnauthorizedAccessException(Constants.getMessage(2004));
         }
-        boolean valid = OtpUtil.verifyOtp(loginViaEmail ? request.getEmail() : request.getPhoneNumber(), request.getOtp(), request.getToken());
+        boolean valid = otpUtil.verifyOtp(loginViaEmail ? request.getEmail() : request.getPhoneNumber(), request.getOtp(), request.getToken());
         if (!valid) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponse.failure(1003, Constants.getMessage(1003), Map.of("details", "OTP verification failed")));

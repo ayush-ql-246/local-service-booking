@@ -21,17 +21,20 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final EmailService emailService;
     private final SmsService smsService;
+    private final OtpUtil otpUtil;
 
     public AuthServiceImpl(AppUserRepository userRepository,
                            ProviderProfileRepository providerProfileRepository,
                            JwtService jwtService, UserService userService,
-                           SmsService smsService, EmailService emailService) {
+                           SmsService smsService, EmailService emailService,
+                           OtpUtil otpUtil) {
         this.userRepository = userRepository;
         this.providerProfileRepository = providerProfileRepository;
         this.jwtService = jwtService;
         this.userService = userService;
         this.emailService = emailService;
         this.smsService = smsService;
+        this.otpUtil = otpUtil;
     }
 
     @Override
@@ -103,7 +106,7 @@ public class AuthServiceImpl implements AuthService {
         String otp = String.valueOf((int)(Math.random() * 900000) + 100000); // 6-digit OTP
         long expiry = System.currentTimeMillis() + 5 * 60 * 1000; // 5 min expiry
 
-        String token = OtpUtil.generateOtpToken(loginViaEmail ? request.getEmail() : request.getPhoneNumber(), otp, expiry);
+        String token = otpUtil.generateOtpToken(loginViaEmail ? request.getEmail() : request.getPhoneNumber(), otp, expiry);
 
         if(loginViaEmail) {
             String emailBody = "Hello " + user.getName() + ",\n\nYour OTP for login is: " + otp + "\nThis code is valid for 5 minutes.";

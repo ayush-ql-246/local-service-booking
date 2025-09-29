@@ -1,16 +1,20 @@
 package com.example.local_service_booking.utils;
 
 import org.apache.commons.codec.binary.Hex;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+@Component
 public class OtpUtil {
+    @Value("${otp.secret-key}")
+    private String SECRET_KEY;
 
-    private static final String SECRET_KEY = "super-secret-key-change-me";
-
-    public static String generateOtpToken(String email, String otp, long expiryTime) {
+    public String generateOtpToken(String email, String otp, long expiryTime) {
         try {
             String hash = hmacSha256(email + "|" + otp, SECRET_KEY);
             String payload = hash + "|" + expiryTime;
@@ -20,7 +24,7 @@ public class OtpUtil {
         }
     }
 
-    public static boolean verifyOtp(String email, String otpEntered, String token) {
+    public boolean verifyOtp(String email, String otpEntered, String token) {
         try {
             String decoded = new String(Base64.getDecoder().decode(token), StandardCharsets.UTF_8);
             String[] parts = decoded.split("\\|");
@@ -37,7 +41,7 @@ public class OtpUtil {
         }
     }
 
-    private static String hmacSha256(String data, String secret) throws Exception {
+    private String hmacSha256(String data, String secret) throws Exception {
         Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
         SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
         sha256_HMAC.init(secretKey);
