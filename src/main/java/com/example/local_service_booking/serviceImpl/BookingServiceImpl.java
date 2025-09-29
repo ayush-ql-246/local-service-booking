@@ -3,10 +3,7 @@ package com.example.local_service_booking.serviceImpl;
 import com.example.local_service_booking.dtos.AppUserDto;
 import com.example.local_service_booking.dtos.BookingDto;
 import com.example.local_service_booking.dtos.BookingRequestDto;
-import com.example.local_service_booking.entities.AppUser;
-import com.example.local_service_booking.entities.Booking;
-import com.example.local_service_booking.entities.BookingStatus;
-import com.example.local_service_booking.entities.ProviderService;
+import com.example.local_service_booking.entities.*;
 import com.example.local_service_booking.exceptions.*;
 import com.example.local_service_booking.repositories.AppUserRepository;
 import com.example.local_service_booking.repositories.BookingRepository;
@@ -170,8 +167,21 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.save(booking);
 
         if(booking.getStatus().equals(BookingStatus.COMPLETED)) {
-            // Calculate hourly rates and add payment system logic
-            
+            if(booking.getService().getPricingType().equals(PricingType.FIXED)) {
+                log.info("Price to be paid : {}", booking.getService().getBasePrice());
+                // Add payment integration
+
+            } else {
+                Long workedTimeMillis = booking.getEndTime() - booking.getStartTime();
+
+                // Convert milliseconds to hours (round up to next hour if there is any extra time)
+                double hoursWorked = Math.ceil(workedTimeMillis / (1000.0 * 60 * 60));
+                double totalPrice = hoursWorked * booking.getService().getBasePrice();
+                log.info("Price to be paid (Hourly): {} for {} hours", totalPrice, hoursWorked);
+                // Add payment integration
+
+            }
+
         }
 
         // Send notification to user
